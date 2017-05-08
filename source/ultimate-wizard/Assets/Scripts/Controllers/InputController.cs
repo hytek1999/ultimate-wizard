@@ -4,7 +4,7 @@ using System;
 
 public class InputController : MonoBehaviour {
 
-    class Repeater
+    protected class Repeater
     {
         const float threshold = 0.5f;
         const float rate = 0.25f;
@@ -42,21 +42,30 @@ public class InputController : MonoBehaviour {
 
     Repeater _hor = new Repeater("Horizontal");
     Repeater _ver = new Repeater("Vertical");
+    Repeater _piece = new Repeater("Move Piece");
 
     #region Notifications
     public const string MoveNotification = "InputController.MoveNotification";
     public const string FireNotification = "InputController.FireNotification";
+    public const string MovePieceNotification = "InputController.MovePieceNotification";
     #endregion
 
     string[] _buttons = new string[] { "Fire1", "Fire2", "Fire3" };
 	
 	// Update is called once per frame
-	void Update () {
+	public virtual void Update () {
         int x = _hor.Update();
-        int y = _ver.Update(); 
+        int y = _ver.Update();
+         
         if (x != 0 || y != 0)
         {
             this.PostNotification(MoveNotification, new Vector3(x, y, 0));
+        }
+
+        int pX = _piece.Update();
+        if (pX != 0)
+        {
+            this.PostNotification(MovePieceNotification, pX);
         }
 
         for (int i = 0; i < 3; ++i)
@@ -66,5 +75,7 @@ public class InputController : MonoBehaviour {
                 this.PostNotification(FireNotification, i);
             }
         }
+
+        
 	}
 }

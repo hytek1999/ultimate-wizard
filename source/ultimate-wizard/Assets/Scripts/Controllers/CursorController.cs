@@ -4,7 +4,13 @@ using System.Collections.Generic;
 using System;
 
 public class CursorController : MonoBehaviour {
-    public float cursorSpeed = 1.0f; 
+    public float cursorSpeed = 1.0f;
+    private const float minCursorX = TilePosition.TileOriginX;
+    private const float maxCursorX = TilePosition.TileOriginX + TilePosition.TileWidth; 
+    private const float minCursorY = TilePosition.TileOriginY + 1;
+    private const float maxCursorY = TilePosition.TileOriginY + TilePosition.TileHeight;
+
+    public TilePosition tilePosition;
 
     private Vector3 targetPosition;
     private bool isMoving;
@@ -13,6 +19,7 @@ public class CursorController : MonoBehaviour {
     void Start()
     {
         animator = GetComponent<Animator>();
+        tilePosition = TilePosition.FromScreenCoords(transform.position);
     }
 
     void OnEnable()
@@ -32,6 +39,8 @@ public class CursorController : MonoBehaviour {
         if (!isMoving)
         {
             targetPosition = transform.position + moveTo;
+            targetPosition.x = Mathf.Clamp(targetPosition.x, minCursorX, maxCursorX);
+            targetPosition.y = Mathf.Clamp(targetPosition.y, minCursorY, maxCursorY);
             StartCoroutine(MoveCursor());
         }
     }
@@ -49,5 +58,6 @@ public class CursorController : MonoBehaviour {
         transform.position = targetPosition;
         animator.SetBool("isMoving", false);
         isMoving = false;
+        tilePosition = TilePosition.FromScreenCoords(targetPosition);
     }
 }
